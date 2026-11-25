@@ -8,7 +8,6 @@ function Signup() {
     name: "",
     email: "",
     password: "",
-    role: "user",
   });
 
   const [message, setMessage] = useState("");
@@ -38,7 +37,7 @@ function Signup() {
       name: form.name,
       email: form.email,
       password: form.password,
-      role: form.role,
+      role: "user",
     };
 
     users.push(newUser);
@@ -90,12 +89,6 @@ function Signup() {
             onChange={handleChange}
             required
           />
-
-          <label>Account Type</label>
-          <select name="role" value={form.role} onChange={handleChange}>
-            <option value="user">User</option>
-            <option value="admin">Admin</option>
-          </select>
 
           <button className="primary-btn" type="submit">
             Create Account

@@ -12,9 +12,9 @@ function AddEvent() {
     location: "",
     category: "Technology",
     price: "",
+    vipPrice: "",
     capacity: "",
     image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87",
-  
   });
 
   const handleChange = (e) => {
@@ -28,13 +28,29 @@ function AddEvent() {
     e.preventDefault();
 
     const events = JSON.parse(localStorage.getItem("events")) || [];
+    const standardPrice = Number(form.price);
+    const ticketTypes = [
+      { id: "standard", name: "Standard", price: standardPrice },
+    ];
+
+    if (form.vipPrice !== "") {
+      ticketTypes.push({
+        id: "vip",
+        name: "VIP",
+        price: Number(form.vipPrice),
+      });
+    }
+
+    const eventDetails = { ...form };
+    delete eventDetails.vipPrice;
 
     const newEvent = {
-      ...form,
+      ...eventDetails,
       id: Date.now(),
-      price: Number(form.price),
+      price: standardPrice,
       capacity: Number(form.capacity),
       registered: 0,
+      ticketTypes,
     };
 
     events.push(newEvent);
@@ -83,6 +99,11 @@ function AddEvent() {
                 <option>Education</option>
                 <option>Sports</option>
                 <option>Workshop</option>
+                <option>Wedding</option>
+                <option>Engagement</option>
+                <option>Birthday</option>
+                <option>Anniversary</option>
+                <option>Family Function</option>
               </select>
             </div>
 
@@ -121,7 +142,7 @@ function AddEvent() {
             </div>
 
             <div className="form-group">
-              <label>Ticket Price</label>
+              <label>Standard Ticket Price</label>
               <input
                 type="number"
                 name="price"
@@ -130,6 +151,18 @@ function AddEvent() {
                 placeholder="₹"
                 min="0"
                 required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>VIP Ticket Price (optional)</label>
+              <input
+                type="number"
+                name="vipPrice"
+                value={form.vipPrice}
+                onChange={handleChange}
+                placeholder="Leave blank if not offered"
+                min="0"
               />
             </div>
 

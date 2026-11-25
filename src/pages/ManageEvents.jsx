@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { getTicketTypes } from "../utils/eventUtils";
 
 function ManageEvents() {
   const [events, setEvents] = useState([]);
@@ -20,6 +21,21 @@ function ManageEvents() {
     setEvents(updatedEvents);
 
     localStorage.setItem("events", JSON.stringify(updatedEvents));
+    [
+      "eventSeatingPlans",
+      "eventOrganizerPlans",
+      "eventSchedules",
+    ].forEach((storageKey) => {
+      const plans = JSON.parse(localStorage.getItem(storageKey) || "[]");
+      if (Array.isArray(plans)) {
+        localStorage.setItem(
+          storageKey,
+          JSON.stringify(
+            plans.filter((plan) => String(plan.eventId) !== String(id))
+          )
+        );
+      }
+    });
   };
 
   return (
@@ -43,7 +59,7 @@ function ManageEvents() {
               <th>Event</th>
               <th>Date</th>
               <th>Category</th>
-              <th>Price</th>
+              <th>Ticket Types</th>
               <th>Registrations</th>
               <th>Actions</th>
             </tr>
@@ -59,13 +75,31 @@ function ManageEvents() {
                 <td>{event.date}</td>
 
                 <td>
-                  <span className="category">{event.category}</span>
+                  <span className="category" data-category={event.category}>
+                    {event.category}
+                  </span>
                 </td>
 
-                <td>₹{event.price}</td>
+                <td>
+                  {getTicketTypes(event).map((ticketType) => (
+                    <span className="ticket-type-price" key={ticketType.id}>
+                      {ticketType.name}: ₹{ticketType.price}
+                    </span>
+                  ))}
+                </td>
 
                 <td>
                   {event.registered}/{event.capacity}
+                  {Number(event.capacity) > 0 &&
+                    (Number(event.registered) || 0) / Number(event.capacity) >=
+                      0.8 && (
+                      <span className="capacity-alert-label">
+                        {(Number(event.registered) || 0) >=
+                        Number(event.capacity)
+                          ? "Sold out"
+                          : "80%+ capacity"}
+                      </span>
+                    )}
                 </td>
 
                 <td>
